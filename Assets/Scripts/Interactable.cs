@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using DialogueEditor;
 
-public enum InteractableType { Enemy, Item }
+
+public enum InteractableType { Enemy, Item , NPC}
 
 public class Interactable : MonoBehaviour
 {
@@ -10,10 +12,28 @@ public class Interactable : MonoBehaviour
 
     public InteractableType interactionType;
 
+    private ConversationStarter conversationStarter;
+
+
+
     void Awake() 
     {
         if(interactionType == InteractableType.Enemy)
         { myActor = GetComponent<Actor>(); }
+
+        conversationStarter = GetComponentInParent<ConversationStarter>();
+
+    }
+
+    public void InteractWithNPC()
+    {
+        Debug.Log("Interacting with NPC");
+
+        // Вызов метода StartDialog() из ConversationStarter, если компонент присутствует
+        if (conversationStarter != null)
+        {
+            conversationStarter.StartDialog();
+        }
     }
 
     public void InteractWithItem()

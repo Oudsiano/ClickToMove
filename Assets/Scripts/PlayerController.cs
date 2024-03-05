@@ -132,6 +132,13 @@ public class PlayerController : MonoBehaviour
 
                 Invoke(nameof(ResetBusyState), 0.5f);
                 break;
+            case InteractableType.NPC:
+
+                target.InteractWithNPC();
+                target = null;
+
+                Invoke(nameof(ResetBusyState), 0.5f);
+                break;
         }
     }
 

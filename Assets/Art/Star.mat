@@ -8,22 +8,24 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Star
-  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_Shader: {fileID: 211, guid: 0000000000000000f000000000000000, type: 0}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _EMISSION
+  - _ALPHABLEND_ON
   m_InvalidKeywords:
   - _FLIPBOOKBLENDING_OFF
   - _SURFACE_TYPE_TRANSPARENT
   m_LightmapFlags: 0
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
-  stringTagMap: {}
+  m_CustomRenderQueue: 3000
+  stringTagMap:
+    RenderType: Transparent
   disabledShaderPasses:
   - DepthOnly
   - SHADOWCASTER
+  - GRABPASS
   m_LockedProperties: 
   m_SavedProperties:
     serializedVersion: 3
@@ -102,7 +104,7 @@ Material:
     - _AlphaToMask: 0
     - _Blend: 0
     - _Blend2: 1
-    - _BlendOp: 0
+    - _BlendOp: 2
     - _BumpScale: 1
     - _CameraFadingEnabled: 0
     - _CameraFarFadeDistance: 2
@@ -118,7 +120,7 @@ Material:
     - _DistortionStrength: 1
     - _DistortionStrengthScaled: 0
     - _Distortionpower: 1
-    - _DstBlend: 0
+    - _DstBlend: 1
     - _DstBlendAlpha: 10
     - _Emission: 4
     - _EmissionEnabled: 0
@@ -128,11 +130,11 @@ Material:
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _InvFade: 1
-    - _LightingEnabled: 1
+    - _LightingEnabled: 0
     - _MainTexUspeed: 0
     - _MainTexVspeed: 0
     - _Metallic: 0
-    - _Mode: 0
+    - _Mode: 5
     - _NoiseUspeed: 2
     - _NoiseVspeed: 0
     - _OcclusionStrength: 1
@@ -144,7 +146,7 @@ Material:
     - _SoftParticlesFarFadeDistance: 1
     - _SoftParticlesNearFadeDistance: 0
     - _SpecularHighlights: 1
-    - _SrcBlend: 1
+    - _SrcBlend: 5
     - _SrcBlendAlpha: 1
     - _Surface: 1
     - _UVSec: 0
@@ -152,12 +154,13 @@ Material:
     - _Usecustomrandom: 0
     - _Usedepth: 1
     - _Usedistortion: 0
-    - _ZWrite: 1
+    - _ZWrite: 0
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _BaseColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _CameraFadeParams: {r: 0, g: Infinity, b: 0, a: 0}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _ColorAddSubDiff: {r: 0, g: 0, b: 0, a: 0}
     - _DistortionSpeedXYPowerZ: {r: 0, g: 0, b: 0, a: 0}
     - _EmissionColor: {r: 2.9960785, g: 2.9960785, b: 2.9960785, a: 1}
     - _FlowTiling: {r: 1, g: 1, b: 0, a: 0}
