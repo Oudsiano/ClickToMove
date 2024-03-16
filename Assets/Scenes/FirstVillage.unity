@@ -12861,7 +12861,7 @@ MonoBehaviour:
   m_OverrideVoxelSize: 0
   m_VoxelSize: 0.16666667
   m_MinRegionArea: 2
-  m_NavMeshData: {fileID: 23800000, guid: 76b64ab40b401426eb06a1b48ca4d8b8, type: 2}
+  m_NavMeshData: {fileID: 23800000, guid: 94176348e266845bfa96c300c79b2811, type: 2}
   m_BuildHeightMesh: 0
 --- !u!1001 &368888061
 PrefabInstance:
@@ -39453,6 +39453,11 @@ MonoBehaviour:
   TMPFont: {fileID: 0}
   Icon: {fileID: 21300000, guid: 2c2a5be59b4a36648a911535c6e46ab8, type: 3}
   Audio: {fileID: 0}
+--- !u!1 &1270616124 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3940431016829707759, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
+  m_PrefabInstance: {fileID: 8464733014281629616}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1270630955 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4140096659794746, guid: 63f209a73d2eb4e469c7ea5b5d8afd38, type: 3}
@@ -58152,6 +58157,25 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
   m_PrefabInstance: {fileID: 8464733014281629616}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1821001466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1270616124}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 621966689595c4457836be04120c25bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  wanderDistance: 50
+  walkSpeed: 5
+  pursueSpeed: 8
+  maxWalkTime: 6
+  idleTime: 5
+  pursueDistance: 10
+  attackDistance: 2
 --- !u!4 &1821407445 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4140096659794746, guid: 63f209a73d2eb4e469c7ea5b5d8afd38, type: 3}
@@ -70830,6 +70854,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 4686052668964599013, guid: 11d61552fbb194405b3b6eab3b559dee, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
     - target: {fileID: 8335963213620814718, guid: 11d61552fbb194405b3b6eab3b559dee, type: 3}
       propertyPath: m_LocalPosition.x
       value: -1.182
@@ -71842,6 +71870,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2640223428466855151, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: 101169bd39c7f9a40b49492772a09851, type: 2}
     - target: {fileID: 3940431016829707759, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       propertyPath: m_Name
       value: Enemy
@@ -71860,7 +71892,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -2.1524878
+      value: 11.7
       objectReference: {fileID: 0}
     - target: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       propertyPath: m_LocalPosition.y
@@ -71868,7 +71900,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3.6303322
+      value: 23.5
       objectReference: {fileID: 0}
     - target: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       propertyPath: m_LocalRotation.w
@@ -71904,7 +71936,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6914656950603273533, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
       insertIndex: -1
       addedObject: {fileID: 687374837}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 3940431016829707759, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821001466}
   m_SourcePrefab: {fileID: 100100000, guid: dc19ef0a46980414d8748f200c03f115, type: 3}
 --- !u!137 &8493542897159610017
 SkinnedMeshRenderer:

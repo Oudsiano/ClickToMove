@@ -1,32 +1,31 @@
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine;
 using UnityEngine.AI;
-
 
 public enum EnemyState
 {
     Idle,
     Moving,
+    Pursuing,
     Attack
 }
 
 [RequireComponent(typeof(NavMeshAgent))]
-
-
 public class EnemyMoving : MonoBehaviour
 {
-    [Header("Wander")]
-    public float wanderDistance = 50f; // How far the animal can Move in one go.
+    public float wanderDistance = 50f;
     public float walkSpeed = 5f;
+    public float pursueSpeed = 8f; // Скорость преследования
     public float maxWalkTime = 6f;
-
-    [Header("Idle")]
-    public float idleTime = 5f; // How Long the animal takes a break for
+    public float idleTime = 5f;
+    public float pursueDistance = 10f; // Дистанция для начала преследования
+    public float attackDistance = 2f; // Дистанция для начала атаки
 
     protected NavMeshAgent navMeshAgent;
     protected EnemyState currentState = EnemyState.Idle;
+
+    Animator animator;
+    bool isAttacking = false;
 
     private void Start()
     {
@@ -37,31 +36,40 @@ public class EnemyMoving : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
         navMeshAgent.speed = walkSpeed;
+        animator = GetComponent<Animator>();
 
-        currentState = EnemyState.Idle;
-        UpdateState();
+        StartCoroutine(EnemyStateMachine());
     }
 
-    protected virtual void UpdateState()
+    protected virtual IEnumerator EnemyStateMachine()
     {
-        switch(currentState)
+        while (true)
         {
-            case EnemyState.Idle:
-                HandlerIdleState();
-                break;
-            case EnemyState.Moving:
-                HandlerMovingState();
-                break;
+            switch (currentState)
+            {
+                case EnemyState.Idle:
+                    yield return StartCoroutine(HandlerIdleState());
+                    break;
+                case EnemyState.Moving:
+                    yield return StartCoroutine(HandlerMovingState());
+                    break;
+                case EnemyState.Pursuing:
+                    yield return StartCoroutine(HandlerPursuingState());
+                    break;
+                case EnemyState.Attack:
+                    yield return StartCoroutine(HandlerAttackState());
+                    break;
+            }
         }
     }
 
     protected Vector3 GetRandomNavMeshPosition(Vector3 origin, float distance)
     {
-        Vector3 randorDirection = Random.insideUnitSphere * distance;
-        randorDirection += origin;
+        Vector3 randomDirection = Random.insideUnitSphere * distance;
+        randomDirection += origin;
         NavMeshHit navMeshHit;
 
-        if (NavMesh.SamplePosition(randorDirection, out navMeshHit, distance, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(randomDirection, out navMeshHit, distance, NavMesh.AllAreas))
         {
             return navMeshHit.position;
         }
@@ -71,60 +79,139 @@ public class EnemyMoving : MonoBehaviour
         }
     }
 
-    protected virtual void HandlerMovingState()
+    protected virtual IEnumerator HandlerIdleState()
     {
-        StartCoroutine(WaitToMove());
-    }
+        yield return new WaitForSeconds(idleTime);
 
-    private IEnumerator WaitToMove()
-    {
-        float waitTime = Random.Range(idleTime / 2, idleTime * 2);
-        yield return new WaitForSeconds(waitTime);
-
-        Vector3 randomDistantion = GetRandomNavMeshPosition(transform.position, wanderDistance);
-
-        navMeshAgent.SetDestination(randomDistantion);
-        //SetState(EnemyState.Moving);
-    }
-
-    protected virtual void HandlerIdleState()
-    {
-        StartCoroutine(WaitReachDistination());
-    }
-
-    private IEnumerator WaitReachDistination()
-    {
-        float startTime = Time.time;
-
-        while(navMeshAgent.remainingDistance > navMeshAgent.stoppingDistance)
+        if (PlayerInRange())
         {
-            if(Time.time - startTime >= maxWalkTime)
-            {
-                navMeshAgent.ResetPath();
-                 SetState(EnemyState.Idle);
-                yield break;
-            }
+            SetState(EnemyState.Pursuing);
+        }
+        else
+        {
+            SetState(EnemyState.Moving);
+            PlayAnimation("Walk");
+        }
+    }
 
-            yield return null;
+    protected bool IsDestinationReached()
+    {
+        return !navMeshAgent.pathPending && navMeshAgent.remainingDistance <= navMeshAgent.stoppingDistance;
+    }
+
+    protected virtual IEnumerator HandlerMovingState()
+    {
+        Vector3 randomDestination = GetRandomNavMeshPosition(transform.position, wanderDistance);
+
+        // Output debug information
+        Debug.Log("Moving to destination: " + randomDestination);
+
+        // Поворачиваем персонаж в сторону цели
+        transform.LookAt(randomDestination);
+
+        navMeshAgent.SetDestination(randomDestination);
+        yield return new WaitUntil(() => IsDestinationReached()); // Ждем, пока персонаж не достигнет цели
+
+        // Персонаж достиг цели, включаем анимацию покоя
+        PlayAnimation("Idle");
+        SetState(EnemyState.Idle);
+    }
+
+    protected virtual IEnumerator HandlerPursuingState()
+    {
+        if (!PlayerInRange())
+        {
+            SetState(EnemyState.Idle);
+            yield break;
         }
 
-        //Destination has been reached
-        SetState(EnemyState.Idle);
+        navMeshAgent.speed = pursueSpeed;
+        Vector3 playerPosition = GetPlayerPosition();
+
+        // Output debug information
+        Debug.Log("Pursuing player to position: " + playerPosition);
+
+        // Поворачиваем персонаж в сторону игрока
+        transform.LookAt(playerPosition);
+
+        navMeshAgent.SetDestination(playerPosition);
+        yield return new WaitUntil(() => IsDestinationReached()); // Ждем, пока персонаж не достигнет игрока
+
+        if (PlayerInRange(attackDistance))
+        {
+            SetState(EnemyState.Attack);
+        }
+        else
+        {
+            SetState(EnemyState.Pursuing);
+        }
+    }
+
+    protected virtual IEnumerator HandlerAttackState()
+    {
+        // Атакуем бесконечно, пока игрок находится в зоне атаки
+        while (PlayerInRange(attackDistance))
+        {
+            // Начинаем атаку, если не в процессе атаки
+            if (!isAttacking)
+            {
+                isAttacking = true;
+                PlayAnimation("Attack");
+
+                // Ждем завершения анимации атаки
+                yield return new WaitForSeconds(animator.GetCurrentAnimatorStateInfo(0).length);
+
+                isAttacking = false;
+            }
+
+            // Короткая пауза перед следующей атакой
+            yield return new WaitForSeconds(0.1f);
+        }
+
+        // Игрок вышел из зоны атаки, переключаемся в режим преследования
+        SetState(EnemyState.Pursuing);
+    }
+
+    private void PlayAnimation(string animationName)
+    {
+        if (animator != null)
+        {
+            animator.Play(animationName);
+        }
     }
 
     protected void SetState(EnemyState newState)
     {
-        if(currentState == newState)
+        if (currentState == newState)
         {
             return;
         }
 
         currentState = newState;
-        OnStateChanged(newState);
     }
 
-    protected virtual void OnStateChanged(EnemyState newState)
+    protected bool PlayerInRange()
     {
-        UpdateState();
+        return Vector3.Distance(transform.position, GetPlayerPosition()) <= pursueDistance;
+    }
+
+    protected bool PlayerInRange(float range)
+    {
+        return Vector3.Distance(transform.position, GetPlayerPosition()) <= range;
+    }
+
+    protected Vector3 GetPlayerPosition()
+    {
+        GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
+
+        if (playerObject != null)
+        {
+            return playerObject.transform.position;
+        }
+        else
+        {
+            Debug.LogError("Player not found! Make sure the player has the 'Player' tag.");
+            return Vector3.zero; // Возвращаем позицию (0, 0, 0) в случае ошибки
+        }
     }
 }
